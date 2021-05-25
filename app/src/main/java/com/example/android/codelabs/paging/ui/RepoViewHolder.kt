@@ -11,6 +11,7 @@ import com.example.android.codelabs.paging.R
 import com.example.android.codelabs.paging.model.Repo
 
 class RepoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+
     private val name: TextView = view.findViewById(R.id.repo_name)
     private val description: TextView = view.findViewById(R.id.repo_description)
     private val stars: TextView = view.findViewById(R.id.repo_stars)
@@ -45,7 +46,6 @@ class RepoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         this.repo = repo
         name.text = repo.fullName
 
-        // if the description is missing, hide the TextView
         var descriptionVisibility = View.GONE
         if (repo.description != null) {
             description.text = repo.description

@@ -9,6 +9,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 const val IN_QUALIFIER = "in:name,description"
+const val NETWORK_PAGE_SIZE = 50
 
 interface GithubService {
    

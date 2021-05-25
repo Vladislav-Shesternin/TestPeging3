@@ -1,6 +1,5 @@
 package com.example.android.codelabs.paging.data
 
-import android.util.Log
 import com.example.android.codelabs.paging.api.GithubService
 import com.example.android.codelabs.paging.api.IN_QUALIFIER
 import com.example.android.codelabs.paging.model.Repo
@@ -10,8 +9,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import retrofit2.HttpException
 import java.io.IOException
 
-private const val GITHUB_STARTING_PAGE_INDEX = 1
-
 class GithubRepository(private val service: GithubService) {
 
     private val inMemoryCache = mutableListOf<Repo>()
@@ -20,7 +17,6 @@ class GithubRepository(private val service: GithubService) {
     private var isRequestInProgress = false
 
     suspend fun getSearchResultStream(query: String): Flow<RepoSearchResult> {
-        Log.d("GithubRepository", "New query: $query")
         lastRequestedPage = 1
         inMemoryCache.clear()
         requestAndSaveData(query)
@@ -47,13 +43,17 @@ class GithubRepository(private val service: GithubService) {
 
         val apiQuery = query + IN_QUALIFIER
         try {
+
             val response = service.searchRepos(apiQuery, lastRequestedPage, NETWORK_PAGE_SIZE)
-            Log.d("GithubRepository", "response $response")
-            val repos = response.items ?: emptyList()
+            val repos = response.items
+
             inMemoryCache.addAll(repos)
+
             val reposByName = reposByName(query)
             searchResults.emit(RepoSearchResult.Success(reposByName))
+
             successful = true
+
         } catch (exception: IOException) {
             searchResults.emit(RepoSearchResult.Error(exception))
         } catch (exception: HttpException) {
@@ -68,9 +68,5 @@ class GithubRepository(private val service: GithubService) {
             it.name.contains(query, true) ||
                     (it.description != null && it.description.contains(query, true))
         }.sortedWith(compareByDescending<Repo> { it.stars }.thenBy { it.name })
-    }
-
-    companion object {
-        private const val NETWORK_PAGE_SIZE = 50
     }
 }
